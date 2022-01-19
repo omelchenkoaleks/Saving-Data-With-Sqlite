@@ -234,6 +234,7 @@ class DatabaseHelper {
     return db.delete(ingredientTable, where: '$recipeId = ?', whereArgs: [id]);
   }
 
-  // TODO: Add close() here
-
+  void close() {
+    _streamDatabase.close();
+  }
 }

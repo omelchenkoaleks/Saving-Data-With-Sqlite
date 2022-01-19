@@ -149,6 +149,8 @@ class DatabaseHelper {
         .mapToList((row) => Ingredient.fromJson(row));
   }
 
+  // ----- FINDING RECIPES -----
+
   Future<Recipe> findRecipeById(int id) async {
     final db = await instance.streamDatabase;
     final recipeList = await db.query(recipeTable, where: 'id = $id');
@@ -171,6 +173,8 @@ class DatabaseHelper {
     return ingredients;
   }
 
+  // ----- INSERTING DATA INTO TABLES -----
+
   // Take the table name and the JSON map.
   Future<int> insert(String table, Map<String, dynamic> row) async {
     final db = await instance.streamDatabase;
@@ -188,6 +192,48 @@ class DatabaseHelper {
     return insert(ingredientTable, ingredient.toJson());
   }
 
-  // TODO: Delete methods go here
+  // ----- DELETING DATA -----
+
+  // Create a private function, _delete, which will delete data from the table with the provided column and row id.
+  Future<int> _delete(String table, String columnId, int id) async {
+    final db = await instance.streamDatabase;
+    // Delete a row where columnId equals the passed-in id.
+    return db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+  }
+
+  Future<int> deleteRecipe(Recipe recipe) async {
+    // Call _delete(), which deletes a recipe with the passed ID.
+    if (recipe.id != null) {
+      return _delete(recipeTable, recipeId, recipe.id!);
+    } else {
+      return Future.value(-1);
+    }
+  }
+
+  Future<int> deleteIngredient(Ingredient ingredient) async {
+    if (ingredient.id != null) {
+      return _delete(ingredientTable, ingredientId, ingredient.id!);
+    } else {
+      return Future.value(-1);
+    }
+  }
+
+  Future<void> deleteIngredients(List<Ingredient> ingredients) {
+    // For each ingredient, delete that entry from the ingredients table.
+    ingredients.forEach((ingredient) {
+      if (ingredient.id != null) {
+        _delete(ingredientTable, ingredientId, ingredient.id!);
+      }
+    });
+    return Future.value();
+  }
+
+  Future<int> deleteRecipeIngredients(int id) async {
+    final db = await instance.streamDatabase;
+    // Delete all ingredients that have the given recipeId.
+    return db.delete(ingredientTable, where: '$recipeId = ?', whereArgs: [id]);
+  }
+
+  // TODO: Add close() here
 
 }

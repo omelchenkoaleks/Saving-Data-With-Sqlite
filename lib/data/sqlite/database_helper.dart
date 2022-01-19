@@ -99,6 +99,29 @@ class DatabaseHelper {
     return _streamDatabase;
   }
 
-  // TODO: Add parseRecipes here
+  List<Recipe> parseRecipes(List<Map<String, dynamic>> recipeList) {
+    final recipes = <Recipe>[];
+    // Iterate over a list of recipes in JSON format.
+    recipeList.forEach((recipeMap) {
+      // Convert each recipe into a Recipe instance.
+      final recipe = Recipe.fromJson(recipeMap);
+      // Add the recipe to the recipe list.
+      recipes.add(recipe);
+    });
+    // Return the list of recipes.
+    return recipes;
+  }
+
+  List<Ingredient> parseIngredients(List<Map<String, dynamic>> ingredientList) {
+    final ingredients = <Ingredient>[];
+    ingredientList.forEach((ingredientMap) {
+      // Convert each ingredient in JSON format into a list of Ingredients.
+      final ingredient = Ingredient.fromJson(ingredientMap);
+      ingredients.add(ingredient);
+    });
+    return ingredients;
+  }
+
+  // TODO: Add findAppRecipes here
 
 }

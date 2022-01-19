@@ -122,6 +122,33 @@ class DatabaseHelper {
     return ingredients;
   }
 
-  // TODO: Add findAppRecipes here
+  Future<List<Recipe>> findAllRecipes() async {
+    // Get your database instance.
+    final db = await instance.streamDatabase;
+    // Use the database query() to get all the recipes. query() has other parameters, but you don’t need them here.
+    final recipeList = await db.query(recipeTable);
+    // Use parseRecipes() to get a list of recipes.
+    final recipes = parseRecipes(recipeList);
+    return recipes;
+  }
+
+  Stream<List<Recipe>> watchAllRecipes() async* {
+    final db = await instance.streamDatabase;
+    // yield* creates a Stream using the query.
+    yield* db
+        // Create a query using recipeTable.
+        .createQuery(recipeTable)
+        // For each row, convert the row to a list of recipes.
+        .mapToList((row) => Recipe.fromJson(row));
+  }
+
+  Stream<List<Ingredient>> watchAllIngredients() async* {
+    final db = await instance.streamDatabase;
+    yield* db
+        .createQuery(ingredientTable)
+        .mapToList((row) => Ingredient.fromJson(row));
+  }
+
+  // TODO: Add findRecipeByID() here
 
 }

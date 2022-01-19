@@ -171,6 +171,23 @@ class DatabaseHelper {
     return ingredients;
   }
 
-  // TODO: Insert methods go here
+  // Take the table name and the JSON map.
+  Future<int> insert(String table, Map<String, dynamic> row) async {
+    final db = await instance.streamDatabase;
+    // Use Sqlbrite’s insert().
+    return db.insert(table, row);
+  }
+
+  Future<int> insertRecipe(Recipe recipe) {
+    // Return values from insert() using the recipe’s table and JSON data.
+    return insert(recipeTable, recipe.toJson());
+  }
+
+  Future<int> insertIngredient(Ingredient ingredient) {
+    // Return values from insert() using the ingredient’s table and JSON data.
+    return insert(ingredientTable, ingredient.toJson());
+  }
+
+  // TODO: Delete methods go here
 
 }

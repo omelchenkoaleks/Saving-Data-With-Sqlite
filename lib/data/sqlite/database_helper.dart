@@ -58,6 +58,47 @@ class DatabaseHelper {
         ''');
   }
 
-// TODO: Add code to open database
+  // this opens the database (and creates it if it doesn't exist)
+  // Declare that the method returns a Future, as the operation is asynchronous.
+  Future<Database> _initDatabase() async {
+    // Get the app document’s directory name, where you’ll store the database.
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+
+    // Create a path to the database by appending the database name to the directory path.
+    final path = join(documentsDirectory.path, _databaseName);
+
+    // Turn on debugging. Remember to turn this off when you’re ready to deploy your app to the store(s).
+    Sqflite.setDebugModeOn(true);
+
+    // Use sqflite’s openDatabase() to create and store the database file in the path.
+    return openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+  }
+
+  // Other methods and classes can use this getter to access (get) the database.
+  Future<Database> get database async {
+    // If _database is not null, it’s already been created, so you return the existing one.
+    if (_database != null) return _database!;
+    // Use lock to ensure that only one process can be in this section of code at a time.
+    await lock.synchronized(() async {
+      // lazily instantiate the db the first time it is accessed
+      // Check to make sure the database is null.
+      if (_database == null) {
+        // Call the _initDatabase(), which you defined above.
+        _database = await _initDatabase();
+        // Create a BriteDatabase instance, wrapping the database.
+        _streamDatabase = BriteDatabase(_database!);
+      }
+    });
+    return _database!;
+  }
+
+  // Define an asynchronous getter method.
+  Future<BriteDatabase> get streamDatabase async {
+    // Await the result — because it also creates _streamDatabase.
+    await database;
+    return _streamDatabase;
+  }
+
+  // TODO: Add parseRecipes here
 
 }

@@ -60,6 +60,28 @@ class SqliteRepository extends Repository {
     });
   }
 
-// TODO: Insert ingredients
+  @override
+  Future<List<int>> insertIngredients(List<Ingredient> ingredients) {
+    return Future(() async {
+      if (ingredients.length != 0) {
+        // Create a list of new ingredient IDs.
+        final ingredientIds = <int>[];
+        // Since you need to use await with insertIngredient, you need to wrap everything in an asynchronous Future. This is a bit tricky, but it allows you to wait for each ID. It returns a Future so the whole method can still run asynchronously.
+        await Future.forEach(ingredients, (Ingredient ingredient) async {
+          // Get the new ingredient’s ID.
+          final futureId = await dbHelper.insertIngredient(ingredient);
+          ingredient.id = futureId;
+          // Add the ID to your return list.
+          ingredientIds.add(futureId);
+        });
+        // Return the list of new IDs.
+        return Future.value(ingredientIds);
+      } else {
+        return Future.value(<int>[]);
+      }
+    });
+  }
+
+// TODO: Delete methods go here
 
 }

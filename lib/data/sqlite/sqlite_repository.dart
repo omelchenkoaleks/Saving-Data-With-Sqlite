@@ -39,6 +39,27 @@ class SqliteRepository extends Repository {
     return dbHelper.findRecipeIngredients(id);
   }
 
-// TODO: Add recipe insert here
+  @override
+  Future<int> insertRecipe(Recipe recipe) {
+    // Return an asynchronous Future.
+    return Future(() async {
+      // Use your helper to insert the recipe and save the id.
+      final id = await dbHelper.insertRecipe(recipe);
+      // Set your recipe class’s id to this id.
+      recipe.id = id;
+      if (recipe.ingredients != null) {
+        recipe.ingredients!.forEach((ingredient) {
+          // Set each ingredient’s recipeId field to this id.
+          ingredient.recipeId = id;
+        });
+        // Insert all the ingredients.
+        insertIngredients(recipe.ingredients!);
+      }
+      // Return the new id.
+      return id;
+    });
+  }
+
+// TODO: Insert ingredients
 
 }

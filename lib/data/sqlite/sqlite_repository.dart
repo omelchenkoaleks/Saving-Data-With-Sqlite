@@ -114,6 +114,16 @@ class SqliteRepository extends Repository {
     return Future.value();
   }
 
-// TODO: initialize and close methods go here
+  @override
+  Future init() async {
+    // Await for the database to initialize.
+    await dbHelper.database;
+    return Future.value();
+  }
 
+  @override
+  void close() {
+    // Call the helper’s close() method.
+    dbHelper.close();
+  }
 }
